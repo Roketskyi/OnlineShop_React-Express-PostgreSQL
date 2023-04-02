@@ -1,0 +1,28 @@
+header {
+    background-color: #20232a;
+    padding: 28px 0px 28px 0px;
+    text-align: center;
+}
+
+.nav {
+    color: rgb(245, 245, 245);
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.nav:not(:last-child) {
+    margin-right: 18px;
+}
+
+.nav:first-child {
+    margin: 0px 35px 0px 15px;
+}
+
+.nav:last-child {
+    margin: 0px 15px 0px 20px;
+}
+
+.active {
+    text-decoration: none;
+    color: rgb(50, 196, 183);
+}
