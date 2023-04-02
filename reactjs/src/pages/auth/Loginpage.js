@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import './loginpage.css';
 
@@ -9,7 +9,10 @@ function Loginpage({isLogin, setIsLogin}) {
 
     const handleLogin = (e) => {
         e.preventDefault();
+
         localStorage.setItem('isLogin', isLogin ? true : false);
+
+        
     }
 
     const [login, setLogin] = useState('');
@@ -59,31 +62,36 @@ function Loginpage({isLogin, setIsLogin}) {
     }
                 
     // check login/password in base
-    const [validLogin, setValidLogin] = useState(false);
     const [invalidAuth, setInvalidAuth] = useState(false);
 
-    const authHandler = async () => {
+    const authHandler = async () => {    
         try {
             const response = await axios.get('/api/find/' + login);
             const base = response.data[0];
-            setValidLogin(base);
-            
-            if (!base || password !== base.password) {
-                setIsLogin(false);
+      
+            if (!base) {
                 setInvalidAuth(true);
-            } else {
+                return;
+            }
+    
+            const responseSubmit = await axios.post("/api/submit", { login, password })
+    
+            if (responseSubmit.status === 200) {
                 setIsLogin(true);
                 setInvalidAuth(false);
                 navigate('/');
+            } else {
+                setInvalidAuth(true);
             }
         } catch (error) {
             console.error(error);
+            setInvalidAuth(true);
         }
     };
     
     
     return (
-        <form className="loginForm" onSubmit={handleLogin}>
+        <form className="loginForm" onSubmit={handleLogin} method="post">
             <h1 className="adminPanel">Admin Panel</h1>
 
             {invalidAuth && <div className="inputsError invalidAuth">Invalid login/password</div>}
