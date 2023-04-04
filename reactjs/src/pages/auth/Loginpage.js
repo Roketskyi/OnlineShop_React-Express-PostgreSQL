@@ -86,8 +86,11 @@ function Loginpage({isLogin, setIsLogin}) {
         } catch (error) {
             console.error(error);
             setInvalidAuth(true);
+        } finally {
+            setPassword('');
         }
     };
+    
     
     
     return (
