@@ -1,5 +1,4 @@
 const pool = require('../db');
-const bcrypt = require('bcrypt');
 
 const base = (req, res) => {
     pool.query("SELECT * FROM base;", (error, results) => {

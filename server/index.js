@@ -66,23 +66,25 @@ app.post("/api/submit", async (req, res) => {
       [login]
     );
 
-    if (!result.rows[0]) {
-      return res.status(401).json({ message: "Неправильний логін." });
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: "Неправильний логін." });
     }
 
     const hashedPassword = result.rows[0].password;
     const isMatch = await bcrypt.compare(inputValue, hashedPassword);
 
     if (isMatch) {
-      return res.status(200).json({ message: "Пароль співпадає." });
+      return res.status(200).json({ message: "Успішний вхід." });
     } else {
-      return res.status(401).json({ message: "Неправильний пароль." });
+      return res.status(401).json({ error: "Неправильний пароль." });
     }
   } catch (err) {
     console.error(err.message);
-    return res.status(500).send('Server error');
+    return res.status(500).send('Помилка сервера');
   }
 });
+
+
 
 
 app.listen(PORT, () => console.log(`Server started on http://${IP}:${PORT}/`));
