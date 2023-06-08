@@ -7,7 +7,9 @@ import { PostsTitle } from './pages/posts/PostsTitle';
 import { Photos } from './pages/photos/Photos';
 import { About } from './pages/about/About';
 import { Notfound } from './pages/notfound/Notfound';
-import { Loginpage } from './pages/auth/Loginpage';
+import { Loginpage } from './pages/auth/sign-in/Loginpage';
+import { Registration } from './pages/auth/sign-up/Registration';
+import { Forgot } from './pages/auth/forgot-password/forgot-password';
 
 import { Breadbord } from './сomponents/breadbord/Breadbord';
 
@@ -24,6 +26,8 @@ function App() {
           <Route path="photos" element={<Photos />} />
           <Route path="about" element={<About />} />
           <Route path="login" element={<Loginpage setIsLogin={setIsLogin} isLogin={isLogin} />} />
+          <Route path="sign-up" element={<Registration />} />
+          <Route path="forgot-password" element={<Forgot />} />
         
           <Route path="*" element={<Notfound />} />
         </Route>

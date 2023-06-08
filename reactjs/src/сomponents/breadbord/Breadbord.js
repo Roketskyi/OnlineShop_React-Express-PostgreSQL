@@ -16,6 +16,7 @@ function Breadbord({isLogin, setIsLogin}) {
             <NavLink to="/photos" className={'nav'}>Photos</NavLink>
             <NavLink to="/about" className={'nav'}>About</NavLink>
             <NavLink to="/login" className={'nav'} onClick={() => setIsLogin(false)}>{isLogin ? 'Logout' : 'Login'}</NavLink>
+            <NavLink to="/sign-up" className={'nav'}>Sign up</NavLink>
         </header>
 
         <Mainpage />

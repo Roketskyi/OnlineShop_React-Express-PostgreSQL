@@ -18,8 +18,12 @@ header {
     margin: 0px 35px 0px 15px;
 }
 
-.nav:last-child {
-    margin: 0px 15px 0px 20px;
+.nav:nth-last-child(1) {
+    margin: 0;
+}
+
+.nav:nth-last-child(2) {
+    margin: 0px 18px 0px 20px;
 }
 
 .active {
