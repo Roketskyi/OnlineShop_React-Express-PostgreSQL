@@ -20,7 +20,8 @@ app.get('/createTable', (req, res) => {
         `CREATE TABLE IF NOT EXISTS "base" (
           id SERIAL PRIMARY KEY,
           login VARCHAR(255),
-          password VARCHAR(255)
+          password VARCHAR(255),
+          email VARCHAR(255)
         );`,
     
         (error, results) => {
@@ -31,12 +32,28 @@ app.get('/createTable', (req, res) => {
         }
     );
 });
-// ------------------------------------------------------------------
+
+// Очищення таблиці
+app.post('/clearTable', (req, res) => {
+  pool.query(
+    'DELETE FROM "base";',
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).send('Помилка сервера');
+      }
+
+      return res.status(200).json({ message: 'Таблицю очищено' });
+    }
+  );
+});
+
+// Додавання інформації в таблицю
 const bcrypt = require('bcrypt');
 
 app.post('/register', async (req, res) => {
   try {
-    const { login, password } = req.body;
+    const { login, password, email } = req.body;
 
     // Generate salt
     const salt = await bcrypt.genSalt(10);
@@ -45,8 +62,8 @@ app.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const result = await pool.query(
-      'INSERT INTO "base" (login, password) VALUES ($1, $2);',
-      [login, hashedPassword]
+      'INSERT INTO "base" (login, password, email) VALUES ($1, $2, $3);',
+      [login, hashedPassword, email]
     );
 
     res.status(200).json(result.rows[0]);
@@ -56,6 +73,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// Перевірка чи є дані в базі
 app.post("/api/submit", async (req, res) => {
   const inputValue = req.body.password;
   const login = req.body.login;
@@ -83,8 +101,5 @@ app.post("/api/submit", async (req, res) => {
     return res.status(500).send('Помилка сервера');
   }
 });
-
-
-
 
 app.listen(PORT, () => console.log(`Server started on http://${IP}:${PORT}/`));
