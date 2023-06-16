@@ -1,25 +1,32 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const routes = require ('./routes/routes');
 const pool = require('./db');
+const jwt = require('jsonwebtoken');
 
 const IP = 'localhost';
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 const app = express();
 
 app.use(express.json());
 
 app.use('/api', routes);
 
-app.post("/", (req, res) => {
-    res.status(200).json('good')
-})
+// Очищення таблиці
+app.post('/clearTable', (req, res) => {
+  pool.query(
+    'DROP TABLE IF EXISTS "base";',
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).send('Помилка сервера');
+      }
 
-// Створення таблиці
-app.get('/createTable', (req, res) => {
-    pool.query(
+      // Після видалення таблиці, створіть її заново
+      pool.query(
         `CREATE TABLE IF NOT EXISTS "base" (
           id SERIAL PRIMARY KEY,
-          login VARCHAR(255),
+          login VARCHAR(255) UNIQUE,
           password VARCHAR(255),
           email VARCHAR(255)
         );`,
@@ -27,38 +34,30 @@ app.get('/createTable', (req, res) => {
         (error, results) => {
           if (error) throw error;
     
-          res.status(200).json(results.rows)
-          console.log('Таблиця успішно створена');
+          res.status(200).json({ message: 'Таблицю очищено' });
         }
-    );
-});
-
-// Очищення таблиці
-app.post('/clearTable', (req, res) => {
-  pool.query(
-    'DELETE FROM "base";',
-    (error, results) => {
-      if (error) {
-        console.error(error);
-        return res.status(500).send('Помилка сервера');
-      }
-
-      return res.status(200).json({ message: 'Таблицю очищено' });
+      );
     }
   );
 });
 
 // Додавання інформації в таблицю
-const bcrypt = require('bcrypt');
-
 app.post('/register', async (req, res) => {
   try {
     const { login, password, email } = req.body;
 
-    // Generate salt
-    const salt = await bcrypt.genSalt(10);
+    // Перевірка на унікальність логіна
+    const loginExists = await pool.query(
+      'SELECT * FROM "base" WHERE login = $1;',
+      [login]
+    );
 
-    // Hash password with salt
+    if (loginExists.rows.length > 0) {
+      return res.status(400).json({ error: 'This login is busy' });
+    }
+
+    // Генерація хеша пароля
+    const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const result = await pool.query(
@@ -92,7 +91,11 @@ app.post("/api/submit", async (req, res) => {
     const isMatch = await bcrypt.compare(inputValue, hashedPassword);
 
     if (isMatch) {
-      return res.status(200).json({ message: "Успішний вхід." });
+      // Створення токена
+      const token = jwt.sign({ login }, 'mySecretKeyByRoman');
+      
+      // Відправлення токена як відповідь
+      return res.status(200).json({ token });
     } else {
       return res.status(401).json({ error: "Неправильний пароль." });
     }
