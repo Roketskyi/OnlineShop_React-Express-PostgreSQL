@@ -2,6 +2,37 @@
     font-family: Gill Sans, sans-serif;
 }
 
+.registrationContainer {
+    position: relative;
+  }
+  
+  .errorWindow {
+    position: fixed;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20%;
+    background-color: #f8d7da;
+    border: 1px solid #aea1a1;
+    padding: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    animation: fade-in 1s ease-in-out;
+  }
+  
+  .errorMessage {
+    color: #721c24;
+  }
+  
+  @keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    75% {
+        opacity: 1;
+    }
+  }
+  
+
 .adminPanel {
     margin: 20px 0 26px 0;
 }

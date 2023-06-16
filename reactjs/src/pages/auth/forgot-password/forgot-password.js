@@ -14,10 +14,11 @@ function Forgot() {
     const [email, setEmail] = useState('');
     const [emailDirty, setEmailDirty] = useState(false);
     const [emailError, setEmailError] = useState('Email cannot be empty');
-    const [formValid, setFormValid] = useState(false);
+    // eslint-disable-next-line
+    const [formValid, setFormValid] = useState(false); 
 
     const emailHandler = (e) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-zA-Z0-9_.]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/;
       
         if (!e.target.value) {
           setEmailError('Email cannot be empty');

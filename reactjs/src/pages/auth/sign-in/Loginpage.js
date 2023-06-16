@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import jwt from 'jsonwebtoken';
 
 import './loginpage.css';
 
@@ -37,8 +38,10 @@ function Loginpage({isLogin, setIsLogin}) {
     }
 
     const passwordHandler = (e) => {
+        const regex = /^[a-zA-Z]+$/;
         if (!e.target.value) setPasswordError('Password cannot be empty');
         else if (e.target.value.length < 4 || e.target.value.length > 10) setPasswordError('Password must be more than 4 and less than 10 characters');
+        else if (!regex.test(e.target.value)) setPasswordError('Incorrect password');
         else setPasswordError('');
         
         setInvalidAuth(false);
@@ -55,7 +58,7 @@ function Loginpage({isLogin, setIsLogin}) {
                 setPasswordDirty(true);
             break;
                 
-            default:
+            default: break;
         }
     }
                 
@@ -75,6 +78,10 @@ function Loginpage({isLogin, setIsLogin}) {
             const responseSubmit = await axios.post("/api/submit", { login, password })
     
             if (responseSubmit.status === 200) {
+                const token = jwt.sign({ login }, 'mySecretKeyByRoman');
+    
+                localStorage.setItem('token', token);
+    
                 setIsLogin(true);
                 setInvalidAuth(false);
                 navigate('/');
@@ -88,8 +95,6 @@ function Loginpage({isLogin, setIsLogin}) {
             setPassword('');
         }
     };
-    
-    
     
     return (
         <form className="loginForm" onSubmit={handleLogin} method="post">
