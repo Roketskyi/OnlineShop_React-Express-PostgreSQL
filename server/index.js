@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const routes = require ('./routes/routes');
+const routes = require('./routes/routes');
 const pool = require('./db');
 const jwt = require('jsonwebtoken');
 
@@ -73,7 +73,7 @@ app.post('/register', async (req, res) => {
 });
 
 // Перевірка чи є дані в базі
-app.post("/api/submit", async (req, res) => {
+app.post('/api/submit', async (req, res) => {
   const inputValue = req.body.password;
   const login = req.body.login;
 
@@ -91,10 +91,8 @@ app.post("/api/submit", async (req, res) => {
     const isMatch = await bcrypt.compare(inputValue, hashedPassword);
 
     if (isMatch) {
-      // Створення токена
-      const token = jwt.sign({ login }, 'mySecretKeyByRoman');
-      
-      // Відправлення токена як відповідь
+      const token = jwt.sign({ login }, 'mySecretKeyByRoman', { expiresIn: '1m' });
+
       return res.status(200).json({ token });
     } else {
       return res.status(401).json({ error: "Неправильний пароль." });
@@ -102,6 +100,24 @@ app.post("/api/submit", async (req, res) => {
   } catch (err) {
     console.error(err.message);
     return res.status(500).send('Помилка сервера');
+  }
+});
+
+// Перевірка валідності токена
+app.post('/api/check-token', async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    jwt.verify(token, 'mySecretKeyByRoman', (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: 'Invalid token' });
+      }
+
+      return res.status(200).json({ message: 'Token is valid' });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
   }
 });
 
