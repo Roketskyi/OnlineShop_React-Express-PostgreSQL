@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import axios from 'axios';
 
 import { Homepage } from './pages/homepage/Homepage';
 import { Posts } from './pages/posts/Posts';
@@ -14,26 +15,43 @@ import { Forgot } from './pages/auth/forgot-password/forgot-password';
 import { Breadbord } from './сomponents/breadbord/Breadbord';
 
 function App() {
-  const [isLogin, setIsLogin] = useState(localStorage.getItem('isLogin') === 'true');
+  const token = localStorage.getItem('token');
+  // eslint-disable-next-line
+  const [isLogin, setIsLogin] = useState(!!token);
 
+  const checkTokenValidity = async () => {
+    try {
+      await axios.post('/api/check-token', { token });
+
+      setIsLogin(true);
+    } catch (error) {
+      setIsLogin(false);
+      localStorage.removeItem('token');
+    }
+  };
+
+  if (token) {
+    checkTokenValidity();
+  }
+  
   return (
     <>
-      <Routes> 
-        <Route path="/" element={<Breadbord isLogin={isLogin} setIsLogin={setIsLogin} />} >
+      <Routes>
+        <Route path="/" element={<Breadbord setIsLogin={setIsLogin} />}>
           <Route index element={<Homepage />} />
           <Route path="posts" element={<Posts />} />
           <Route path="posts/:title" element={<PostsTitle />} />
           <Route path="photos" element={<Photos />} />
           <Route path="about" element={<About />} />
-          <Route path="login" element={<Loginpage setIsLogin={setIsLogin} isLogin={isLogin} />} />
+          <Route path="login" element={<Loginpage setIsLogin={setIsLogin} />} />
           <Route path="sign-up" element={<Registration />} />
           <Route path="forgot-password" element={<Forgot />} />
-        
+
           <Route path="*" element={<Notfound />} />
         </Route>
       </Routes>
     </>
-  )
+  );
 }
 
 export default App;

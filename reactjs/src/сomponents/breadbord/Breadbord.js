@@ -4,26 +4,31 @@ import { Mainpage } from '../mainpage/Mainpage';
 import './header.css';
 import './footer.css';
 
-function Breadbord({isLogin, setIsLogin}) {
+function Breadbord({ setIsLogin }) {
+  const token = localStorage.getItem('token');
+  const isLogin = !!token;
 
-    localStorage.setItem('isLogin', isLogin ? true : false);
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLogin(false);
+  };
 
-    return (
-        <>
-        <header>            
-            <NavLink to="/" className={'nav'}>Home</NavLink>
-            <NavLink to="/posts" className={'nav'}>Posts</NavLink>
-            <NavLink to="/photos" className={'nav'}>Photos</NavLink>
-            <NavLink to="/about" className={'nav'}>About</NavLink>
-            <NavLink to="/login" className={'nav'} onClick={() => setIsLogin(false)}>{isLogin ? 'Logout' : 'Login'}</NavLink>
-            <NavLink to="/sign-up" className={'nav'}>Sign up</NavLink>
-        </header>
+  return (
+    <>
+      <header>
+        <NavLink to="/" className={'nav'}>Home</NavLink>
+        <NavLink to="/posts" className={'nav'}>Posts</NavLink>
+        <NavLink to="/photos" className={'nav'}>Photos</NavLink>
+        <NavLink to="/about" className={'nav'}>About</NavLink>
+        <NavLink to="/login" className={'nav'} onClick={isLogin ? handleLogout : null}>{isLogin ? 'Logout' : 'Login'}</NavLink>
+        <NavLink to="/sign-up" className={'nav'}>Sign up</NavLink>
+      </header>
 
-        <Mainpage />
-        
-        <footer>© Reynes | Telegram: @reynesss</footer>
-        </>
-    )
+      <Mainpage />
+
+      <footer>© Reynes | Telegram: @reynesss</footer>
+    </>
+  );
 }
 
-export {Breadbord}
+export { Breadbord };
