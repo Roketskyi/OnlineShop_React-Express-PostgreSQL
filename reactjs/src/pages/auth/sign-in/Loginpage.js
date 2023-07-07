@@ -38,7 +38,7 @@ function Loginpage({ setIsLogin }) {
   };
 
   const passwordHandler = (e) => {
-    const regex = /^[a-zA-Z]+$/;
+    const regex = /^[a-zA-Z0-9]+$/;
     if (!e.target.value) setPasswordError('Password cannot be empty');
     else if (e.target.value.length < 4 || e.target.value.length > 10)
       setPasswordError('Password must be between 4 and 10 characters');

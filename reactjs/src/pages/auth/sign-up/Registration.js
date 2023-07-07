@@ -30,7 +30,7 @@ function Registration() {
     }, [loginError, passwordError, emailError]);
 
     const loginHandler = (e) => {
-        const regex = /^[a-zA-Z0-9_.]+$/
+        const regex = /^[a-zA-Z0-9_.]+$/;
         if (!regex.test(e.target.value)) setLoginError('Incorrect login');
         else if (e.target.value.length < 4 || e.target.value.length > 12) setLoginError('Login must be more than 4 and less than 12 characters');
         else setLoginError('');
@@ -39,7 +39,7 @@ function Registration() {
     }
 
     const passwordHandler = (e) => {
-        const regex = /^[a-zA-Z]+$/;
+        const regex = /^[a-zA-Z0-9_.]+$/;
         if (!e.target.value) setPasswordError('Password cannot be empty');
         else if (e.target.value.length < 4 || e.target.value.length > 10) setPasswordError('Password must be more than 4 and less than 10 characters');
         else if (!regex.test(e.target.value)) setPasswordError('Incorrect password');
@@ -49,7 +49,7 @@ function Registration() {
     }
 
     const emailHandler = (e) => {
-        const regex = /^[a-zA-Z0-9_.]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/;
+        const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       
         if (!e.target.value) {
           setEmailError('Email cannot be empty');

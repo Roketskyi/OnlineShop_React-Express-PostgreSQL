@@ -11,6 +11,7 @@ import { Notfound } from './pages/notfound/Notfound';
 import { Loginpage } from './pages/auth/sign-in/Loginpage';
 import { Registration } from './pages/auth/sign-up/Registration';
 import { Forgot } from './pages/auth/forgot-password/forgot-password';
+import { AdminPanel } from './pages/adminPanel/AdminPanel';
 
 import { Breadbord } from './сomponents/breadbord/Breadbord';
 
@@ -18,6 +19,7 @@ function App() {
   const token = localStorage.getItem('token');
   // eslint-disable-next-line
   const [isLogin, setIsLogin] = useState(!!token);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const checkTokenValidity = async () => {
     try {
@@ -30,8 +32,22 @@ function App() {
     }
   };
 
+  const checkAdminStatus = async () => {
+    try {
+      const response = await axios.post('/api/check-admin', { token });
+      const isAdmin = response.data.isAdmin;
+
+      if (isAdmin) {
+        setIsAdmin(true);
+      }
+    } catch (error) {
+      setIsAdmin(false);
+    }
+  };
+
   if (token) {
     checkTokenValidity();
+    checkAdminStatus();
   }
   
   return (
@@ -46,6 +62,7 @@ function App() {
           <Route path="login" element={<Loginpage setIsLogin={setIsLogin} />} />
           <Route path="sign-up" element={<Registration />} />
           <Route path="forgot-password" element={<Forgot />} />
+          {isAdmin && <Route path="adminPanel" element={<AdminPanel />} />}
 
           <Route path="*" element={<Notfound />} />
         </Route>

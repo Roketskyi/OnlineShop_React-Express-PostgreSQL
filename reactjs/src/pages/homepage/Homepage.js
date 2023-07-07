@@ -1,3 +1,5 @@
+import './homepage.css'
+
 function Homepage() {
     return (
       <div>
@@ -6,4 +8,4 @@ function Homepage() {
     )
 }
   
-export {Homepage};
+export { Homepage };
