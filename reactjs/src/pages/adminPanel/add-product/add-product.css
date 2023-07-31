@@ -1,0 +1,49 @@
+.form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.form-p {
+    font-size: 17px;
+    margin-bottom: 4px;
+}
+
+.button-submit-add-product,
+.input-submit-add-product {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid white;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.button-submit-add-product[type="submit"],
+.input-submit-add-product[type="submit"] {
+  background: #ec5990;
+  color: white;
+  text-transform: uppercase;
+  border: none;
+  margin-top: 40px;
+  padding: 20px;
+  font-size: 16px;
+  font-weight: 100;
+  letter-spacing: 10px;
+}
+
+.button-submit-add-product[type="submit"]:hover,
+.input-submit-add-product[type="submit"]:hover {
+  background: #bf1650;
+}
+
+.button-submit-add-product[type="submit"]:active,
+.input-submit-add-product[type="button"]:active,
+.input-submit-add-product[type="submit"]:active {
+  transition: 0.3s all;
+  transform: translateY(3px);
+  border: 1px solid transparent;
+  opacity: 0.8;
+}
+

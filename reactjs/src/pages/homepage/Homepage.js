@@ -1,9 +1,7 @@
-import './homepage.css'
-
 function Homepage() {
     return (
       <div>
-        <h1>Hello! This is Homepage!</h1>
+        <h1 style={{textAlign: "center"}}>Hello! This is Homepage!</h1>
       </div>
     )
 }

@@ -4,59 +4,34 @@
     align-items: center;
 }
 
-.button-container button {
+.button-container a {
+    text-decoration: none;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     width: 250px;
     height: 70px;
-    font-size: 16px;
+    font-size: 20px;
     color: #fff;
     border-radius: 35px;
-    border: 2px solid #00000040;
+    border: 2px solid #b6b6b6;
     box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
     cursor: pointer;
     transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-.button-container button:first-child {
+.button-container a:first-child {
     background-color: green;
     margin: 70px 0 24px 0;
 }
 
-.button-container button:last-child {
+.button-container a:last-child {
     background-color: red;
 }
 
-.button-container button:hover {
-    background-color: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+.button-container a:hover {
+    background-color: rgba(135, 135, 135, 0.5);
+    box-shadow: 0 0 5px rgb(255, 255, 255);
 }
-
-.product-form {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 500px;
-    height: 0;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    transition: height 0.3s;
-}
-  
-.product-form.open {
-    height: 400px;
-}
-
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 14px;
-    height: 30px;
-    background-color: #fff;
-    border: none;
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
-}
-  

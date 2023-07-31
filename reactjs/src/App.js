@@ -12,6 +12,8 @@ import { Loginpage } from './pages/auth/sign-in/Loginpage';
 import { Registration } from './pages/auth/sign-up/Registration';
 import { Forgot } from './pages/auth/forgot-password/forgot-password';
 import { AdminPanel } from './pages/adminPanel/AdminPanel';
+import { AddProduct } from './pages/adminPanel/add-product/Add-product';
+import { RemoveProduct } from './pages/adminPanel/remove-product/Remove-product';
 
 import { Breadbord } from './сomponents/breadbord/Breadbord';
 
@@ -62,8 +64,15 @@ function App() {
           <Route path="login" element={<Loginpage setIsLogin={setIsLogin} />} />
           <Route path="sign-up" element={<Registration />} />
           <Route path="forgot-password" element={<Forgot />} />
-          {isAdmin && <Route path="adminPanel" element={<AdminPanel />} />}
 
+          {isAdmin && (
+            <>
+              <Route path="adminPanel" element={<AdminPanel />} />
+              <Route path="AdminPanel/add-product" element={<AddProduct />} />
+              <Route path="AdminPanel/remove-product" element={<RemoveProduct />} />
+            </>
+          )}
+          
           <Route path="*" element={<Notfound />} />
         </Route>
       </Routes>

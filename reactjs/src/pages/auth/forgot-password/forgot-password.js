@@ -15,6 +15,7 @@ function Forgot() {
     e.preventDefault();
 
     try {
+      // eslint-disable-next-line
       const response = await axios.post('/api/reset-password', { email });
       setSuccess(true);
       setError('');
