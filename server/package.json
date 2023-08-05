@@ -20,7 +20,8 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "pg": "^8.8.0",
-    "pidcrypt": "^0.0.33"
+    "pidcrypt": "^0.0.33",
+    "sequelize": "^6.32.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"

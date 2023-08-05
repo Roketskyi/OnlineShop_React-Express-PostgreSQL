@@ -9,6 +9,7 @@ const mailjet = new Mailjet({
   apiSecret: "18cb8d356002c06987bb0976f11539e6"
 });
 
+
 const IP = 'localhost';
 const PORT = 5000;
 const app = express();
@@ -228,6 +229,17 @@ app.post('/api/check-admin', async (req, res) => {
 
       return res.status(200).json({ isAdmin });
     });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/add-products', async (req, res) => {
+  const { name, description, price, image } = req.body;
+  try {
+    const product = await Product.create({ name, description, price, image });
+    res.status(201).json(product);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Server error' });
