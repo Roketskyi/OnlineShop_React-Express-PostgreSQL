@@ -96,7 +96,7 @@ function Loginpage({ setIsLogin }) {
   };
 
   return (
-    <form className="loginForm" onSubmit={handleLogin} method="post">
+    <form className="loginForm" onSubmit={handleLogin} method="post" style={{textAlign:"center"}}>
       <h1 className="adminPanel">Login</h1>
 
       {invalidAuth && <div className="inputsError invalidAuth">Invalid login/password</div>}

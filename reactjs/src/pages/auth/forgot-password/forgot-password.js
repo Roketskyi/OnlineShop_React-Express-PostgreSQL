@@ -56,7 +56,7 @@ function Forgot() {
   };
 
   return (
-    <form className="loginForm" onSubmit={handlePasswordReset} method="post">
+    <form className="loginForm" onSubmit={handlePasswordReset} method="post" style={{textAlign:"center"}}>
       <h1 className="adminPanel">Forgot Password</h1>
 
       {success && <div className="successMessage">Password reset instructions have been sent to your email.</div>}
@@ -78,7 +78,7 @@ function Forgot() {
       </div>
 
       <div>
-        <button className="btnLogin" disabled={!formValid} type="submit">
+        <button className="btnForgotPassword" disabled={!formValid} type="submit">
           Send
         </button>
       </div>

@@ -113,7 +113,7 @@ function Registration() {
             <div className="errorMessage">{errorMessage}</div>
         </div>
       )}
-        <form className="loginForm" onSubmit={handleLogin} method="post">
+        <form className="loginForm" onSubmit={handleLogin} method="post" style={{textAlign:"center"}}>
             <h1 className="adminPanel">Sign Up</h1>
             
             <div>
