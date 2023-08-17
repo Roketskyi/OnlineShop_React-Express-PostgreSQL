@@ -1,14 +1,14 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const routes = require('./routes/routes');
-const pool = require('./db');
+const sequelize = require('./db');
+const { Base } = require('./models/allBase');
 const jwt = require('jsonwebtoken');
 const Mailjet = require('node-mailjet');
 const mailjet = new Mailjet({
   apiKey: "4ca14c170f7ca87f0c03b84db91545ea",
   apiSecret: "18cb8d356002c06987bb0976f11539e6"
 });
-
 
 const IP = 'localhost';
 const PORT = 5000;
@@ -19,33 +19,25 @@ app.use(express.json());
 app.use('/api', routes);
 
 // Очищення таблиці
-app.post('/clearTable', (req, res) => {
-  pool.query(
-    'DROP TABLE IF EXISTS "base";',
-    (error, results) => {
-      if (error) {
-        console.error(error);
-        return res.status(500).send('Помилка сервера');
-      }
-
-      // Після видалення таблиці, створіть її заново
-      pool.query(
-        `CREATE TABLE IF NOT EXISTS "base" (
-          id SERIAL PRIMARY KEY,
-          login VARCHAR(255) UNIQUE,
-          password VARCHAR(255),
-          email VARCHAR(255),
-          admin INT
-        );`,
+app.post('/clearTable', async (req, res) => {
+  try {
+    await sequelize.query('DROP TABLE IF EXISTS "base";');
     
-        (error, results) => {
-          if (error) throw error;
-    
-          res.status(200).json({ message: 'Таблицю очищено' });
-        }
+    await sequelize.query(`
+      CREATE TABLE IF NOT EXISTS "base" (
+        id SERIAL PRIMARY KEY,
+        login VARCHAR(255) UNIQUE,
+        password VARCHAR(255),
+        email VARCHAR(255),
+        admin INT
       );
-    }
-  );
+    `);
+
+    res.status(200).json({ message: 'Table Table is cleared' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
 });
 
 // Додавання інформації в таблицю
@@ -53,36 +45,36 @@ app.post('/register', async (req, res) => {
   try {
     const { login, password, email } = req.body;
 
-    // Перевірка на унікальність логіна
-    const loginExists = await pool.query(
-      'SELECT * FROM "base" WHERE login = $1;',
-      [login]
-    );
+    // Check if login exists
+    const loginExists = await Base.findOne({
+      where: { login },
+    });
 
-    if (loginExists.rows.length > 0) {
+    if (loginExists) {
       return res.status(400).json({ error: 'This login is busy' });
     }
 
-    // Перевірка на унікальність поштової скриньки
-    const emailExists = await pool.query(
-      'SELECT * FROM "base" WHERE email = $1;',
-      [email]
-    );
+    // Check if email exists
+    const emailExists = await Base.findOne({
+      where: { email },
+    });
 
-    if (emailExists.rows.length > 0) {
+    if (emailExists) {
       return res.status(400).json({ error: 'This email is busy' });
     }
 
-    // Генерація хеша пароля
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // Generate password hash
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await pool.query(
-      'INSERT INTO "base" (login, password, email) VALUES ($1, $2, $3);',
-      [login, hashedPassword, email]
-    );
+    // Create a new user in the database
+    const newUser = await Base.create({
+      login,
+      password: hashedPassword,
+      email,
+      admin: 0,
+    });
 
-    res.status(200).json(result.rows[0]);
+    res.status(200).json(newUser);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
@@ -95,16 +87,19 @@ app.post('/api/submit', async (req, res) => {
   const login = req.body.login;
 
   try {
-    const result = await pool.query(
-      'SELECT password FROM "base" WHERE login = $1;',
-      [login]
+    const result = await sequelize.query(
+      'SELECT password FROM "base" WHERE login = :login;',
+      {
+        replacements: { login },
+        type: sequelize.QueryTypes.SELECT
+      }
     );
 
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       return res.status(401).json({ error: "Неправильний логін." });
     }
 
-    const hashedPassword = result.rows[0].password;
+    const hashedPassword = result[0].password;
     const isMatch = await bcrypt.compare(inputValue, hashedPassword);
 
     if (isMatch) {
@@ -119,6 +114,7 @@ app.post('/api/submit', async (req, res) => {
     return res.status(500).send('Помилка сервера');
   }
 });
+
 
 // відновлення пароля
 app.post('/api/reset-password', async (req, res) => {
@@ -168,9 +164,11 @@ app.post('/api/reset-password', async (req, res) => {
 
   try {
     // Отримати користувача за електронною поштою
-    const user = await pool.query('SELECT * FROM "base" WHERE email = $1;', [email]);
+    const user = await Base.findOne({
+      where: { email }
+    })
 
-    if (user.rows.length === 0) {
+    if (!user) {
       return res.status(400).json({ error: 'User not found' });
     }
 
@@ -179,10 +177,10 @@ app.post('/api/reset-password', async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Оновити пароль користувача в базі даних
-    await pool.query('UPDATE "base" SET password = $1 WHERE email = $2;', [hashedPassword, email]);
+    await user.update({ password: hashedPassword });
 
     // Відправити новий пароль на пошту користувача
-    sendNewPasswordByEmail(email, user.rows[0].login, newPassword);
+    sendNewPasswordByEmail(email, user.login, newPassword);
 
     res.status(200).json({ message: 'Password reset instructions sent to email' });
   } catch (error) {
@@ -213,22 +211,21 @@ app.post('/api/check-admin', async (req, res) => {
   const { token } = req.body;
 
   try {
-    jwt.verify(token, 'mySecretKeyByRoman', async (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ message: 'Invalid token' });
-      }
+    const decoded = jwt.verify(token, 'mySecretKeyByRoman');
+    const login = decoded.login;
 
-      const login = decoded.login;
-      const user = await pool.query('SELECT admin FROM "base" WHERE login = $1;', [login]);
-
-      if (user.rows.length === 0) {
-        return res.status(401).json({ message: 'User not found' });
-      }
-
-      const isAdmin = user.rows[0].admin === 1;
-
-      return res.status(200).json({ isAdmin });
+    const user = await sequelize.query('SELECT admin FROM "base" WHERE login = :login', {
+      replacements: { login },
+      type: sequelize.QueryTypes.SELECT,
     });
+
+    if (user.length === 0) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    const isAdmin = user[0].admin === 1;
+
+    return res.status(200).json({ isAdmin });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Server error' });
@@ -237,6 +234,7 @@ app.post('/api/check-admin', async (req, res) => {
 
 app.post('/api/add-products', async (req, res) => {
   const { name, description, price, image } = req.body;
+
   try {
     const product = await Product.create({ name, description, price, image });
     res.status(201).json(product);
