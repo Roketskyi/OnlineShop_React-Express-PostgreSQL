@@ -156,7 +156,7 @@ function Registration() {
                     className="loginFormInput"
                     type="email"
                     placeholder="Email"
-                    autoComplete="current-password"
+                    autoComplete="email"
                     required                
                 />
             </div>

@@ -67,8 +67,8 @@ function Loginpage({ setIsLogin }) {
   const authHandler = async () => {
     try {
       const response = await axios.get('/api/find/' + login);
-      const base = response.data[0];
-
+      const base = response.data;
+      
       if (!base) {
         setInvalidAuth(true);
         return;
